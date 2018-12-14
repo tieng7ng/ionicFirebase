@@ -1,30 +1,42 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, ViewController } from 'ionic-angular';
 
-/**
- * Generated class for the SingleAppareilPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import { Appareil } from '../../models/Appareil';
+import { AppareilsService } from '../../services/appareils.service';
+
 
 @Component({
   selector: 'page-single-appareil',
   templateUrl: 'single-appareil.html',
 })
+
 export class SingleAppareilPage {
-  name: string;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
-  }
+  public index: number;
+  public appareil: Appareil;
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad SingleAppareilPage');
+  constructor(
+    public navCtrl: NavController,
+    public navParams: NavParams,
+    public viewCtrl: ViewController,
+    public appareilsService: AppareilsService,
+  ) {
   }
 
   ngOnInit() {
+    console.log('>>> single-appareil', this.navParams.get('appareil'));
+    this.index = this.navParams.get('index');
+    this.appareil = this.appareilsService.appareilsList[this.index];
+  }
 
-    this.name = this.navParams.get('appareilName');
+  /**
+   * close modal
+   */
+  dismissModal() {
+    this.viewCtrl.dismiss();
+  }
 
+  onToggleAppareil() {
+    this.appareil.isOn = !this.appareil.isOn;
   }
 }

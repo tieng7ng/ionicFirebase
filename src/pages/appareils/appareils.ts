@@ -1,31 +1,33 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { MenuController, ModalController } from 'ionic-angular';
 
 import { SingleAppareilPage } from '../single-appareil/single-appareil';
-
-/**
- * Generated class for the AppareilsPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
-
-//@IonicPage()
+import { Appareil } from '../../models/Appareil';
+import { AppareilsService } from '../../services/appareils.service';
 @Component({
   selector: 'page-appareils',
-  templateUrl: 'appareils.html',
+  templateUrl: 'appareils.html'
 })
 export class AppareilsPage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  appareilsList: Appareil[];
+
+  constructor(private modalCtrl: ModalController,
+    private appareilsService: AppareilsService,
+    private menuCtrl: MenuController,
+  ) { }
+
+  ionViewWillEnter() {
+    this.appareilsList = this.appareilsService.appareilsList.slice();
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad AppareilsPage');
+  onLoadAppareil(index: number) {
+    let modal = this.modalCtrl.create(SingleAppareilPage, { index: index });
+    modal.present();
   }
 
-  onLoadAppareil(name: string) {
-    this.navCtrl.push(SingleAppareilPage, {appareilName: name});
+  menuToggle() {
+    console.log('>>> Open Menu');
+    this.menuCtrl.open();
   }
-
 }
