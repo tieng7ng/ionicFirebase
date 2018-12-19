@@ -4,21 +4,35 @@ import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 
+//=====
+// Page
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
 import { AppareilsPage } from '../pages/appareils/appareils';
-import { OptionsPage} from '../pages/options/options';
+import { AppareilFormPage } from '../pages/appareil-form/appareil-form';
+import { AuthPage } from '../pages/auth/auth';
+import { OptionsPage } from '../pages/options/options';
 import { SingleAppareilPage } from '../pages/single-appareil/single-appareil';
 import { SettingsPage } from '../pages/settings/settings';
 import { TabsPage } from '../pages/tabs/tabs';
+// Page
+//=====
 
+//=====
+// Services
 import { AppareilsService } from '../services/appareils.service';
+import { AuthService } from '../services/auth.service';
+// Services
+//=====
+
 
 @NgModule({
   declarations: [
     MyApp,
     HomePage,
     AppareilsPage,
+    AppareilFormPage,
+    AuthPage,
     OptionsPage,
     SettingsPage,
     SingleAppareilPage,
@@ -33,6 +47,8 @@ import { AppareilsService } from '../services/appareils.service';
     MyApp,
     HomePage,
     AppareilsPage,
+    AppareilFormPage,
+    AuthPage,
     OptionsPage,
     SettingsPage,
     SingleAppareilPage,
@@ -42,7 +58,8 @@ import { AppareilsService } from '../services/appareils.service';
     StatusBar,
     SplashScreen,
     { provide: ErrorHandler, useClass: IonicErrorHandler },
-    AppareilsService
+    AppareilsService,
+    AuthService
   ]
 })
 export class AppModule { }
