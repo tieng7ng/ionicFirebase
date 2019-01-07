@@ -3,6 +3,7 @@ import { NavController, NavParams, LoadingController, ToastController } from 'io
 import { MenuController, ModalController } from 'ionic-angular';
 import { Subscription } from 'rxjs';
 
+
 //=====
 // Pages
 import { SingleAppareilPage } from '../single-appareil/single-appareil';
@@ -38,15 +39,20 @@ export class AppareilsPage {
 
   ionViewWillEnter() {
     this.appareilsList = this.appareilsService.appareilsList.slice();
+    console.log('>>> ionViewWillEnter appareilsList', this.appareilsList);
+
   }
 
 
   ngOnInit() {
+    
     this.appareilsSubscription = this.appareilsService.appareils$.subscribe(
       (appareils: Appareil[]) => {
         this.appareilsList = appareils.slice();
       }
     );
+    console.log('>>> ngOnInit appareilsList', this.appareilsList);
+    
     this.appareilsService.emitAppareils();
   }
 
@@ -82,13 +88,13 @@ export class AppareilsPage {
   /**
    * 
    */
-  /*
+  
   onSaveList() {
     let loader = this.loadingCtrl.create({
       content: 'Sauvegarde en cours…'
     });
     loader.present();
-    
+    /*
     this.appareilsService.saveData().then(
       () => {
         loader.dismiss();
@@ -107,6 +113,7 @@ export class AppareilsPage {
         }).present();
       }
     );
+    */
   }
 
   onFetchList() {
@@ -114,24 +121,12 @@ export class AppareilsPage {
       content: 'Récuperation en cours…'
     });
     loader.present();
-    this.appareilsService.retrieveData().then(
-      () => {
-        loader.dismiss();
-        this.toastCtrl.create({
-          message: 'Données récupérées !',
-          duration: 3000,
-          position: 'bottom'
-        }).present();
-      },
-      (error) => {
-        loader.dismiss();
-        this.toastCtrl.create({
-          message: error,
-          duration: 3000,
-          position: 'bottom'
-        }).present();
-      }
-    );
+    console.log('>>> appareilsList', this.appareilsList);
+
+    let tabApp = this.appareilsService.retrieveData();
+    console.log(tabApp);
+
+    loader.dismiss();
   }
-  */
+  
 }

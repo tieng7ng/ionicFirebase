@@ -5,6 +5,11 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import * as firebase from 'firebase';
 import { firebaseConfig } from './credentials';
 
+// creation and utility methods
+import { Observable, Subject, pipe } from 'rxjs';
+import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
+import { AngularFireAuth } from '@angular/fire/auth';
+
 
 import { HomePage } from '../pages/home/home';
 import { AuthPage } from '../pages/auth/auth';
@@ -32,7 +37,9 @@ export class MyApp {
     platform: Platform,
     statusBar: StatusBar,
     splashScreen: SplashScreen,
-    private menuCtrl: MenuController
+    private menuCtrl: MenuController,
+    private fireStore: AngularFirestore,
+    private afAuth: AngularFireAuth,
   ) {
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
@@ -40,32 +47,27 @@ export class MyApp {
       statusBar.styleDefault();
       splashScreen.hide();
 
-      //=====
-      // Initialize Firebase
-      let config = {
-        apiKey: "AIzaSyD76lsd6DVIMiIpLJsVQX4X0_uOkGHdQrM",
-        authDomain: "firstproject-998a2.firebaseapp.com",
-        databaseURL: "https://firstproject-998a2.firebaseio.com",
-        projectId: "firstproject-998a2",
-        storageBucket: "firstproject-998a2.appspot.com",
-        messagingSenderId: "43949308687"
-      };
-
-      firebase.initializeApp(config);
-      // Initialize Firebase
-      //=====
-
-      firebase.auth().onAuthStateChanged(
+      this.afAuth
+      .auth.onAuthStateChanged(
         (user) => {
           if (user) {
+            //====
+            // user sign in
             this.isAuth = true;
             this.content.setRoot(TabsPage);
+            // user sign in
+            //====
           } else {
+            //====
+            // user sign out
             this.isAuth = false;
             this.content.setRoot(AuthPage, { mode: 'connect' });
+            // user sign out
+            //====
           }
         }
       );
+
     });
   }
 

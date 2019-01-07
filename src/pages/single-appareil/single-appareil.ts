@@ -43,6 +43,7 @@ export class SingleAppareilPage {
    * Change value isOn
    */
   onToggleAppareil() {
+    console.log('>> single appareil - onToggleAppareil');
     this.appareil.isOn = !this.appareil.isOn;
   }
 

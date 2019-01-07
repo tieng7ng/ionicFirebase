@@ -1,11 +1,15 @@
+import { Injectable } from '@angular/core';
+
 // creation and utility methods
 import { Observable, Subject, pipe } from 'rxjs';
-import { AngularFirestore } from "angularfire2/firestore";
+import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 
+import * as firebase from 'firebase';
 import DataSnapshot = firebase.database.DataSnapshot;
 
 import { Appareil } from '../models/Appareil';
 
+@Injectable()
 export class AppareilsService {
 
   appareils$ = new Subject<Appareil[]>();
@@ -49,8 +53,8 @@ export class AppareilsService {
   ];
 
   constructor(
-//    private db: AngularFirestore
-    ) {
+    private fireStore: AngularFirestore
+  ) {
 
   }
 
@@ -68,26 +72,7 @@ export class AppareilsService {
       });
     }
     */
-  /*
-    retrieveData(): Observable<any> {
-      return new Observable((observer) => {
-        this.ref.onSnapshot((querySnapshot) => {
-          let appareils = [];
-          querySnapshot.forEach((doc) => {
-            let data = doc.data();
-            console.log(data, doc);
-            appareils.push({
-              key: doc.id,
-              title: data.title,
-              description: data.description,
-              synopsis: data.synopsis
-            });
-          });
-          observer.next(appareils);
-        });
-      });
-    }
-  */
+
   /*
     saveData() {
       return new Promise((resolve, reject) => {
@@ -101,21 +86,23 @@ export class AppareilsService {
         );
       });
     }
-  
-    retrieveData() {
-      return new Promise((resolve, reject) => {
-        firebase.database().ref('appareils').once('value').then(
-          (data: DataSnapshot) => {
-            this.appareilsList = data.val();
-            this.emitAppareils();
-            resolve('Données récupérées avec succès !');
-          }, (error) => {
-            reject(error);
-          }
-        );
-      });
-    }
   */
+
+  retrieveData() {
+      console.log('>>> appareilService - retrieveData');
+
+      let profcollection: any;
+      const appareilsDoc = this.fireStore.collection('appareils');
+      appareilsDoc.valueChanges().subscribe((profile: any) => {
+        console.log('>>>>', profile);
+        profcollection = profile;
+      });
+
+      console.log('>>>> retrieveData - return ', profcollection);
+      return profcollection;
+  }
+
+
   addAppareil(appareil: Appareil) {
     this.appareilsList.push(appareil);
   }
