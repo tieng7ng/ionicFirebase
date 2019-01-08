@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 
 // creation and utility methods
 import { Observable, Subject, pipe } from 'rxjs';
-import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
-
+import { AngularFirestore, AngularFirestoreDocument, AngularFirestoreCollection } from '@angular/fire/firestore';
+import { map } from 'rxjs/operators';
 import * as firebase from 'firebase';
 import DataSnapshot = firebase.database.DataSnapshot;
 
@@ -13,9 +13,6 @@ import { Appareil } from '../models/Appareil';
 export class AppareilsService {
 
   appareils$ = new Subject<Appareil[]>();
-
-  //  private ref = firebase.firestore();
-
 
   appareilsList: Appareil[] = [
     {
@@ -52,9 +49,13 @@ export class AppareilsService {
     }
   ];
 
+  private appareilsCollection: AngularFirestoreCollection;
+  private appareilDoc: AngularFirestoreDocument<Appareil>;
+
   constructor(
     private fireStore: AngularFirestore
   ) {
+    this.appareilsCollection = this.fireStore.collection('appareils');
 
   }
 
@@ -88,23 +89,87 @@ export class AppareilsService {
     }
   */
 
-  retrieveData() {
-      console.log('>>> appareilService - retrieveData');
 
-      let profcollection: any;
-      const appareilsDoc = this.fireStore.collection('appareils');
-      appareilsDoc.valueChanges().subscribe((profile: any) => {
-        console.log('>>>>', profile);
-        profcollection = profile;
+  retrieveData(): Observable<Appareil[]> {
+
+    let profcollection: any[] = [];
+
+    return new Observable((observer) => {
+
+      //===========================
+      // Appareils list
+
+      let docId = this.appareilsCollection.snapshotChanges().pipe(map(changes => {
+        return changes.map(a => {
+          const data = a.payload.doc.data() as Appareil;
+          const id = a.payload.doc.id;
+          return { id, ...data };
+        });
+      }));
+
+      let tabAppareil: Appareil[] = [];
+
+      // build appareil list
+      docId.subscribe(docs => {
+        docs.forEach(doc => {
+          tabAppareil.push(doc);
+          console.log(doc);
+        });
+
+        this.appareilsList = tabAppareil;
+        observer.next(tabAppareil);
       });
+      // Appareils list
+      //===========================
 
-      console.log('>>>> retrieveData - return ', profcollection);
-      return profcollection;
+      //      console.log('>>> tabAppareil', tabAppareil);
+      //      observer.next(tabAppareil);
+      /*
+      
+      
+            appareilsDoc.valueChanges().subscribe((profile: Appareil[]) => {
+              profcollection = profile;
+      
+              console.log('>>>> retrieveData - return ', profcollection);
+              for (var property1 in profcollection) {
+                console.log(profcollection[property1]);
+              }
+      
+              console.log('>>> profcollection', profcollection);
+      
+              // retourne la donnée
+              observer.next(profcollection);
+            });
+            */
+    });
+
   }
 
 
+  saveAllAppareils(): Observable<boolean> {
+    return new Observable((observer) => {
+      this.appareilsList.forEach(doc => {
+        console.log('>>> saveAllAppareils', doc);
+        if (doc.id) {
+          this.saveAppareil(doc.id, doc);
+        } else {
+          this.addAppareil(doc);
+        }
+      });
+      console.log('>>> saveAllAppareils');
+      observer.next(true);
+    });
+  }
+
+  saveAppareil(appId: string, appareil: Appareil) {
+    //Get the task document
+    this.appareilDoc = this.fireStore.doc<Appareil>('appareils' + `/${appId}`);
+    this.appareilDoc.update(appareil);
+
+  }
+
   addAppareil(appareil: Appareil) {
-    this.appareilsList.push(appareil);
+    this.appareilsCollection.add(appareil);
   }
 
   emitAppareils() {

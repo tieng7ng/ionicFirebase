@@ -45,14 +45,14 @@ export class AppareilsPage {
 
 
   ngOnInit() {
-    
+
     this.appareilsSubscription = this.appareilsService.appareils$.subscribe(
       (appareils: Appareil[]) => {
         this.appareilsList = appareils.slice();
       }
     );
     console.log('>>> ngOnInit appareilsList', this.appareilsList);
-    
+
     this.appareilsService.emitAppareils();
   }
 
@@ -88,18 +88,20 @@ export class AppareilsPage {
   /**
    * 
    */
-  
+
   onSaveList() {
     let loader = this.loadingCtrl.create({
       content: 'Sauvegarde en cours…'
     });
     loader.present();
-    /*
-    this.appareilsService.saveData().then(
+    
+    this.appareilsService.saveAllAppareils().subscribe(
+      //=====
+      // subscribe
       () => {
         loader.dismiss();
         this.toastCtrl.create({
-          message: 'Données sauvegardées !',
+          message: 'Données enregistrées !',
           duration: 3000,
           position: 'bottom'
         }).present();
@@ -112,8 +114,9 @@ export class AppareilsPage {
           position: 'bottom'
         }).present();
       }
+      // subscribe
+      //=====
     );
-    */
   }
 
   onFetchList() {
@@ -121,12 +124,35 @@ export class AppareilsPage {
       content: 'Récuperation en cours…'
     });
     loader.present();
-    console.log('>>> appareilsList', this.appareilsList);
+    this.appareilsService.retrieveData().subscribe(
+      //=====
+      // subscribe
+      (appareilsListLoc) => {
+        loader.dismiss();
+        // For display
+        this.appareilsList = appareilsListLoc;
 
-    let tabApp = this.appareilsService.retrieveData();
-    console.log(tabApp);
+        // For store in current
+        this.appareilsService.appareilsList = appareilsListLoc;
 
-    loader.dismiss();
+        this.toastCtrl.create({
+          message: 'Données récupérées !',
+          duration: 3000,
+          position: 'bottom'
+        }).present();
+      },
+      (error) => {
+        loader.dismiss();
+        this.toastCtrl.create({
+          message: error,
+          duration: 3000,
+          position: 'bottom'
+        }).present();
+      }
+      // subscribe
+      //=====
+    );
+
   }
-  
+
 }
